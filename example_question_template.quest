@@ -1,0 +1,10 @@
+variable	integer	n	1	10#defining an integer variable; named 'n', between 1 (inclusive) and 10 (exclusive)
+variable	float	a	1.6	2.5	5#defining a floating point variable; named 'a', between 1.6 (inclusive) to 2.5 (exclusive), [kept to 5 s.f. (optional)]
+variable	constant	k	6.2#defining a constant, named 'k', value 6.2
+calculation	y	<<a>>**<<n>> + <<k>>#defining a calculation, function named 'y', calculation uses double angled brackets around variable names already defined, and any numpy mathematical function called with 'np.functionname'
+answer	y	6#the parameter/function defining the answer is 'y'; [it should present answers to 6 significant figure (optional)]
+text	Calculate the thing corresponding to <it>n</it> = <<n>> undergoing an acceleration <it>a</it> = <<a>> m s<sup>-1</sup> with <it>k</it> = <<k>>#the question text, html tags permitted, double angled bracketed variable names will fill in the specific values of those variables to their specified number of sig figs if chosen
+type	numerical#sets the type of question which will be created
+quantity	100#sets how many copies of the question with different values will be created
+multichoice	choices	6#for multiple choice questions, will specify how many choices are given (it will be parsed but its value ignored for a numerical question)
+numerical	tolerance	0.01#for numerical questions, will specify the tolerance for the student answer (it will be parsed but its value ignored for a multiple choice question)
