@@ -290,23 +290,23 @@ def process_question_file(filename):
 					sf = None
 					if len(bits) > 5:
 						sf = int(bits[5])
-					print('\t\tValue will be between {} and {}'.format(low,high))
+					print('\t\tValue will be between {} (inclusive) and {} (exclusive)'.format(low,high))
 					myq.v.update({name:variable(name=name,function=variable.float_gen,low=low,high=high,sf=sf)})
 				if var_type == 'integer':
 					name = bits[2]
-					print('\t\tVariable is a integer point value of name {}'.format(name))
+					print('\t\tVariable is a integer value of name {}'.format(name))
 					if name in myq.v:
 						print('\t\t!!Duplicate variable name ({}) found on line {}!!'.format(name,ln))
-					low = float(bits[3])
-					high = float(bits[4])
-					print('\t\tValue will be between {} and {}'.format(low,high))
+					low = int(bits[3])
+					high = int(bits[4])
+					print('\t\tValue will be between {:d} (inclusive) and {:d} (exclusive)'.format(low,high))
 					myq.v.update({name:variable(name=name,function=variable.int_gen,low=low,high=high)})
 			elif etype == 'calculation':
 				print('\tAdding calculation from line {}'.format(ln))
 				name = bits[1]
 				calculation = bits[2]
 				myq.c.update({name:calculation})
-				print('\t\tCalculation will be generated from "{}"'.format(calculation))
+				print('\t\tCalculation will be generated from "{}", function labelled as {}'.format(calculation,name))
 			elif etype == 'text':
 				print('\tAdding question text from line {}'.format(ln))
 				myq.qtext = bits[1]
@@ -339,11 +339,12 @@ def process_question_file(filename):
 					myq.qoptions.update({'tolerance':float(bits[2])})
 					print('\t\tSetting answer tolerance as {}'.format(myq.qoptions['tolerance']))
 			elif etype == 'answer':
-				print('\tSetting answer variable/calculation')
+				print('\tSetting answer variable/calculation on line {}'.format(ln))
 				myq.answer = bits[1]
+				print('\t\tAnswer defined as function {}'.format(myq.answer))
 				if len(bits) > 2:
 					myq.qoptions.update({'answer_sf':int(bits[2])})
-				print('\t\tAnswer set as {}'.format(myq.qoptions['answer_sf']))
+					print('\t\tAnswer tolerance set as {}'.format(myq.qoptions['answer_sf']))
 	
 
 	return myq

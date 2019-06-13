@@ -1,0 +1,69 @@
+Question file format (.quest files)
+Defines the available keywords, sub-keywords and arguments for creating a .quest file. All items in a line (keyword/sub-keywords/arguments) are separated by tabs. In the following definitions, regular brackets () indicate required arguments and square brackets [] indicate optional arguments. The brackets themselves should *not* be included in the file.
+
+keywords:
+
+	variable - declares a new variable/constant. General format is:
+		variable	(float/integer/constant)	(arguments)
+		
+		A floating point variable is created as:
+			variable	float	(label)	(minimum)	(maximum)	[precision]
+
+			(label) should be a label/name by which the variable will be referred. It should satisfy the requirements of a Python variable name (no mathematical operator symbols/spaces/etc.)
+			(minimum) is the lowest (inclusive) value from which to draw random numbers
+			(maximum) is the highest (exclusive) value from which to draw random numbers
+			[precision] optional, is the number of significant figures to which drawn numbers are limited
+
+		An integer variable is created as:
+			variable	integer	(label)	(minimum)	(maximum)
+
+			(label) should be a label/name by which the variable will be referred. It should satisfy the requirements of a Python variable name (no mathematical operator symbols/spaces/etc.)
+			(minimum) is the lowest (inclusive) value from which to draw random numbers
+			(maximum) is the highest (exclusive) value from which to draw random numbers - important to note that this is high (exclusive) and is therefore *not* a value which will be drawn by the random number generator. (maximum) - 1 is the highest value which will appear.
+
+		A constant value is created as:
+			variable	constant	(label)	(value)
+			(label) should be a label/name by which the variable will be referred. It should satisfy the requirements of a Python variable name (no mathematical operator symbols/spaces/etc.)
+			(value) is the value which the constant will possess. It will accept float and integer values, and can also accept scientific notation with the `e' symbol, e.g. 1.234e5
+
+
+
+	calculation - declares a calculation. Format is:
+		calculation	(label)	(expression)
+			(label) should be a label/name by which the variable will be referred. It should satisfy the requirements of a Python variable name (no mathematical operator symbols/spaces/etc.)
+			(expression) can be any Python evaluatable expression, including references to functions/routines provided by NumPy using the namespace `np' (e.g. np.pi for the value of pi, np.sin() for the function sine). To refer to parameters defined with labels previously, enclose them in double angled brackets. So for a variable defined with the label `m', to have the calculation perform the square of m's value would be: <<m>>**2
+	
+	
+	answer - should occur only once (if more than once, later ones will overwrite earlier), defines which function produces the answer. Form is:
+		answer (label)	[precision]
+		(label) should be an existing label name of a calculation defined previously. (it could also be the name of a variable/constant, but that may defeat the point of generating more than one variation of the question). This is then the function which produces the answer the student is expected to calculate themselves.
+		[precision] optional, the number of significant figures to which answer options (if multiple choice) should be presented
+		
+	
+	text - should occur only once (if more than once, later ones will overwrite earlier), defines the text which will appear for asking the question of the student. Form is:
+		text (question text)
+		(question text) should be the entirety of the text with which the students will be presented. It accepts standard html tags for formatting. To include values of the defined variables, one should use the same double angled bracket notation as for `calculation'. An example entry might read:
+		
+"text	Provide the accelation experienced by an object of mass <it>m</it> = <<m>> kg upon which is exerted a force <it>F</it> = <<F>> N."
+
+		this assumes variables have been defined with labels `m' and `F'. The <it></it> html tags italicise the variable names, and the <<m>> and <<F>> will be filled in with the specific values for m and F in that copy of the question.
+		
+	
+	
+	type - declares what format of question is being asked. Form:
+		type	(numerical/multichoice)
+		(numerical/multichoice) is specifically one of those words. These are the currently supported question formats. Numerical requires a value to be typed in by the student, multichoice presents the students with a selection of values, of which they should select the correct one.
+	
+	
+	quantity - defines the number of copies/variations of the question to generate. Format:
+		quantity	(number)
+		(number) should be an integer number of intended copies/variations
+		
+		
+	multichoice - defines any custom options pertaining to multichoice questions. If used when the question type is not set to multichoice, it will be parsed and stored, but will not affect the output. Currently only one option:
+		multichoice	choices	(number)
+		(number) should be the number of values presented to the student from which the correct should be selected
+		
+	numerical - defines any custom options pertaining to numerical questions. If used when the question type is not set to numerical, it will be parsed and stored, but will not affect the output. Currently only one option:
+		numerical	tolerance	(value)
+		(value) is a number indicating the fractional tolerance to apply to match student responses with the correct answer
