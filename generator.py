@@ -137,7 +137,7 @@ def answers_multichoice(choices):
 		full_answers += answer_text.format(value,format_value(choice))
 	return full_answers
 
-def question_multichoice(qtext,question,choices):
+def question_multichoice(qtext,question,choices,nformat):
 	text = """
 	<question type="multichoice"> 
 	 <name> 
@@ -147,11 +147,12 @@ def question_multichoice(qtext,question,choices):
 	 	<text> <![CDATA[{1:s}]]></text> 
 	 </questiontext> 
 	{2:s}
+	<answernumbering>{3:s}</answernumbering>
 	<shuffleanswers>1</shuffleanswers>
 	<single>true</single>
 </question> """
 	answers = answers_multichoice(choices)
-	outtext = text.format(qtext,question,answers)
+	outtext = text.format(qtext,question,answers,nformat)
 	return outtext
 
 def round_sigfigs(value, sigfig=2):
@@ -201,22 +202,22 @@ def parse_calculation(calc,v):
 	return value
 
 class question():
-	def make_numerical_question(self):
+	def make_numerical_question(self,num):
 		global question_numerical
 		self.c,self.v = update_values(self.c,self.v)
 		qtext = parse_questiontext(self.qtext,self.v)
 		answer = round_sigfigs(self.v[self.answer].value,self.qoptions['answer_sf'])
-		return question_numerical.format(self.qlabel,qtext,answer,self.qoptions['tolerance'],0)
-	def make_multichoice_question(self):
+		return question_numerical.format(self.qlabel+'_{}'.format(num),qtext,answer,self.qoptions['tolerance'],0)
+	def make_multichoice_question(self,num):
 		self.c,self.v = update_values(self.c,self.v)
 		qtext = parse_questiontext(self.qtext,self.v)
 		choices = [round_sigfigs(self.v[self.answer].value,self.qoptions['answer_sf'])]
 		for extra_value in range(self.qoptions['choices']-1):
 			self.c,self.v = update_values(self.c,self.v)
 			choices.append(round_sigfigs(self.v[self.answer].value,self.qoptions['answer_sf']))
-		fulltext = question_multichoice(self.qlabel,qtext,choices)
+		fulltext = question_multichoice(self.qlabel+'_{}'.format(num),qtext,choices,self.qoptions['numbering'])
 		return fulltext
-	def __init__(self,qlabel='Question',v={},c={},qtext=None,answer=None,qtype='multichoice',qoptions={'choices':6,'answer_sf':None,'tolerance':0.01},quantity=1):
+	def __init__(self,qlabel='Question',v={},c={},qtext=None,answer=None,qtype='multichoice',qoptions={'choices':6,'answer_sf':None,'tolerance':0.01,'numbering':'none'},quantity=1):
 		self.v = v
 		self.c = c
 		self.qlabel = qlabel
@@ -224,18 +225,18 @@ class question():
 		self.qtext = qtext
 		self.answer = answer
 		self.qoptions = qoptions
-	def generate_single(self):
+	def generate_single(self,num=0):
 		if self.qtype == 'multichoice':
-			return self.make_multichoice_question()
+			return self.make_multichoice_question(num)
 		elif self.qtype == 'numerical':
-			return self.make_numerical_question()
+			return self.make_numerical_question(num)
 		else:
 			print('!!!!!!')
 			return None
 	def generate_full(self):
 		text = ''
 		for i in range(self.quantity):
-			text += self.generate_single()
+			text += self.generate_single(i)
 		return text
 	def generate_xml(self):
 		global header, footer
@@ -247,6 +248,7 @@ class question():
 
 def process_question_file(filename):
 	valid_qtypes = ['multichoice','numerical']
+	valid_numberings = ['none','abc','ABCD','123','iii','IIII']
 	question_name = filename.split('.')[0] #split filename apart to get title of quiz
 	
 	print('Running question generation')
@@ -329,6 +331,12 @@ def process_question_file(filename):
 				if bits[1] == 'choices':
 					myq.qoptions.update({'choices':int(bits[2])})
 					print('\t\tSetting number of available choices as {}'.format(myq.qoptions['choices']))
+				elif bits[1] == 'numbering':
+					if bits[2] in valid_numberings:
+						myq.qoptions.update({'numbering':bits[2]})
+						print('\t\tSetting numbering format to "{}"'.format(myq.qoptions['numbering']))
+					else:
+						print('\t\t!!Numbering format "{}" for multichoice numbering not recognised!!'.format(bits[2]))
 				else:
 					print('\t\t!!Suboption {} for multichoice not recognised!!'.format(bits[1]))
 			elif etype == 'numerical':

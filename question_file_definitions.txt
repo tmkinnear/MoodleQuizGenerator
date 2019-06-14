@@ -44,9 +44,9 @@ keywords:
 		text (question text)
 		(question text) should be the entirety of the text with which the students will be presented. It accepts standard html tags for formatting. To include values of the defined variables, one should use the same double angled bracket notation as for `calculation'. An example entry might read:
 		
-"text	Provide the accelation experienced by an object of mass <it>m</it> = <<m>> kg upon which is exerted a force <it>F</it> = <<F>> N."
+"text	Provide the accelation experienced by an object of mass <i>m</i> = <<m>> kg upon which is exerted a force <i>F</i> = <<F>> N."
 
-		this assumes variables have been defined with labels `m' and `F'. The <it></it> html tags italicise the variable names, and the <<m>> and <<F>> will be filled in with the specific values for m and F in that copy of the question.
+		this assumes variables have been defined with labels `m' and `F'. The <i></i> html tags italicise the variable names, and the <<m>> and <<F>> will be filled in with the specific values for m and F in that copy of the question.
 		
 	
 	
@@ -60,9 +60,12 @@ keywords:
 		(number) should be an integer number of intended copies/variations
 		
 		
-	multichoice - defines any custom options pertaining to multichoice questions. If used when the question type is not set to multichoice, it will be parsed and stored, but will not affect the output. Currently only one option:
+	multichoice - defines any custom options pertaining to multichoice questions. If used when the question type is not set to multichoice, it will be parsed and stored, but will not affect the output. Current options:
 		multichoice	choices	(number)
 		(number) should be the number of values presented to the student from which the correct should be selected
+		
+		multichoice	numbering	(numbering format)
+		(numbering format) must be the character sequence code for the way in which options will be numbered (if at all). All options listed subsequently will be in quote marks, but the quote marks should not be included in the argument. The first option is "none", which is also the default if the line is not included. Other options are: "abc" and "ABCD" for alphabetical numbering in lower and upper case respectively (note that upper case goes to D, not just C). "iii" and "IIII" for lower case and upper case Roman numerals, respectively. Again note that there are three lower case i's and four upper case I's.
 		
 	numerical - defines any custom options pertaining to numerical questions. If used when the question type is not set to numerical, it will be parsed and stored, but will not affect the output. Currently only one option:
 		numerical	tolerance	(value)
